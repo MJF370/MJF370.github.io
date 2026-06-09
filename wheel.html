@@ -82,20 +82,72 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
 @keyframes boom{0%{transform:scale(0);opacity:1}50%{transform:scale(1.5);opacity:1}100%{transform:scale(2.2);opacity:0}}
 .audio-tip{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:20;cursor:pointer;backdrop-filter:blur(10px)}
 .error-tip{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.85);color:#fff;padding:20px 30px;border-radius:12px;font-size:15px;z-index:9999;max-width:80%;text-align:center;line-height:1.6}
+/* ===== 樱桃小丸子主题 ===== */
+.screen{background:linear-gradient(135deg,#ffd6e7 0%,#fff2b3 50%,#ffe0b2 100%)!important}
+#screen4{background:linear-gradient(180deg,#ffd6e7 0%,#fff2b3 60%,#ffe0b2 100%)!important}
+#screen4 .birthday-text{color:#d63031}
+#screen4 .birthday-subtitle{color:#c44569}
+.sakura{position:absolute;top:-30px;font-size:20px;pointer-events:none;z-index:1;animation:sakuraFall linear infinite}
+@keyframes sakuraFall{
+  0%{transform:translateY(-30px) translateX(0) rotate(0);opacity:0}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{transform:translateY(110vh) translateX(40px) rotate(720deg);opacity:0}
+}
+.maruko{position:relative;display:inline-block;line-height:1}
+.maruko-emoji{position:relative;display:inline-block}
+.maruko-emoji::before{content:"🎀";position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:.5em;z-index:2}
+.float-slow{animation:floatSlow 4s ease-in-out infinite}
+.float-fast{animation:floatSlow 2.5s ease-in-out infinite}
+@keyframes floatSlow{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.swing{animation:swing 3s ease-in-out infinite;transform-origin:top center}
+@keyframes swing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.spin-orbit{position:absolute;width:100%;height:100%;top:0;left:0;animation:orbit 12s linear infinite;pointer-events:none;z-index:3}
+@keyframes orbit{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.orbit-emoji{position:absolute;font-size:26px;top:50%;left:50%;margin-top:-13px;margin-left:-13px;transform-origin:0 0}
+.spin-orbit-inner{animation:orbit 8s linear infinite reverse}
+.wheel-center-maruko{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90px;height:90px;background:radial-gradient(circle at 50% 40%,#fff 0%,#ffe0e9 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;cursor:pointer;z-index:4;border:4px solid #ff6b9d;box-shadow:0 4px 20px rgba(255,107,157,.5),inset 0 -4px 8px rgba(255,107,157,.2)}
+.wheel-center-maruko:active{transform:translate(-50%,-50%) scale(.95)}
+.wheel-center-maruko.disabled{background:linear-gradient(135deg,#ccc,#999);border-color:#999;cursor:not-allowed}
+.wheel-center-maruko .maruko-label{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;color:#ff4757;white-space:nowrap}
+.wheel-center-maruko.disabled .maruko-label{color:#fff}
+.welcome-maruko{position:relative;display:inline-block;margin-bottom:10px}
+.welcome-maruko::before{content:"🎀";position:absolute;top:-2px;left:50%;transform:translateX(-50%);font-size:.55em;z-index:2}
+.cake-side{position:absolute;bottom:0;font-size:50px;animation:floatSlow 3s ease-in-out infinite}
+.cake-side.left{left:10px;animation-delay:0s}
+.cake-side.right{right:10px;animation-delay:1.5s}
+.cake-side.bottom-l{left:30%;bottom:-10px;font-size:40px;animation-delay:.7s}
+.cake-side.bottom-r{right:30%;bottom:-10px;font-size:40px;animation-delay:2.2s}
+.title-decoration{position:absolute;font-size:30px;animation:floatSlow 3s ease-in-out infinite;z-index:2}
+.title-decoration.tl{top:60px;left:20px;animation-delay:0s}
+.title-decoration.tr{top:80px;right:20px;animation-delay:1.5s}
+.title-decoration.bl{bottom:120px;left:30px;animation-delay:2s;font-size:24px}
+.title-decoration.br{bottom:100px;right:30px;animation-delay:.5s;font-size:24px}
 </style>
 </head>
 <body>
 <div class="screen active" id="screen1">
   <div class="fireworks" id="fireworks"></div>
+  <div class="sakura-layer" id="sakuraLayer1"></div>
+  <span class="title-decoration tl float-slow">🌸</span>
+  <span class="title-decoration tr float-slow">🌻</span>
+  <span class="title-decoration bl float-fast">⭐</span>
+  <span class="title-decoration br float-slow">🍑</span>
   <div class="welcome-stage">
+    <div class="welcome-maruko float-slow" style="font-size:90px;display:block;margin-bottom:10px">👧</div>
     <span class="welcome-line1" id="welcomeLine1"></span>
     <span class="welcome-line2" id="welcomeLine2">幸运大抽奖</span>
   </div>
   <button class="next-btn" id="btn1">下一张 →</button>
 </div>
 <div class="screen" id="screen2">
+  <div class="sakura-layer" id="sakuraLayer2"></div>
+  <span class="title-decoration tl float-slow">🌸</span>
+  <span class="title-decoration tr float-slow">⭐</span>
+  <span class="title-decoration bl float-fast">🌻</span>
+  <span class="title-decoration br float-slow">🍑</span>
   <div class="rules-container">
-    <h2 class="rules-title">🎂 用户须知 🎂</h2>
+    <h2 class="rules-title"><span class="maruko-emoji">👧</span> 用户须知 <span class="maruko-emoji">👧</span></h2>
     <ol class="rules-list">
       <li>该游戏轮盘，仅限于本人参加，其他人参加均为无效参与</li>
       <li>游戏轮盘奖励内容无法更改，如需调整，需联系开发者</li>
@@ -106,10 +158,31 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
   <button class="next-btn" id="btn2">下一张 →</button>
 </div>
 <div class="screen" id="screen3">
+  <div class="sakura-layer" id="sakuraLayer3"></div>
+  <span class="title-decoration tl float-slow">🌸</span>
+  <span class="title-decoration tr float-slow">🌻</span>
+  <span class="title-decoration bl float-fast">⭐</span>
+  <span class="title-decoration br float-slow">🍑</span>
   <div class="wheel-wrapper">
+    <div class="spin-orbit">
+      <span class="orbit-emoji" style="transform:rotate(0deg) translateX(180px) rotate(0deg)">👧</span>
+      <span class="orbit-emoji" style="transform:rotate(60deg) translateX(180px) rotate(-60deg)">🌸</span>
+      <span class="orbit-emoji" style="transform:rotate(120deg) translateX(180px) rotate(-120deg)">🐶</span>
+      <span class="orbit-emoji" style="transform:rotate(180deg) translateX(180px) rotate(-180deg)">👧</span>
+      <span class="orbit-emoji" style="transform:rotate(240deg) translateX(180px) rotate(-240deg)">🌻</span>
+      <span class="orbit-emoji" style="transform:rotate(300deg) translateX(180px) rotate(-300deg)">🍑</span>
+    </div>
+    <div class="spin-orbit spin-orbit-inner">
+      <span class="orbit-emoji" style="transform:rotate(30deg) translateX(150px) rotate(-30deg);font-size:20px">⭐</span>
+      <span class="orbit-emoji" style="transform:rotate(150deg) translateX(150px) rotate(-150deg);font-size:20px">🌟</span>
+      <span class="orbit-emoji" style="transform:rotate(270deg) translateX(150px) rotate(-270deg);font-size:20px">✨</span>
+    </div>
     <div class="wheel-pointer"></div>
     <canvas class="wheel" id="wheel" width="640" height="640"></canvas>
-    <div class="wheel-center" id="spinBtn">开始<br>抽奖</div>
+    <div class="wheel-center-maruko" id="spinBtn">
+      <span class="maruko-emoji">👧</span>
+      <span class="maruko-label" id="spinLabel">开始<br>抽奖</span>
+    </div>
   </div>
   <button class="next-btn" id="btn3">领取祝福 →</button>
   <div class="prize-modal" id="prizeModal">
@@ -122,6 +195,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
   </div>
 </div>
 <div class="screen" id="screen4">
+  <div class="sakura-layer" id="sakuraLayer4"></div>
   <div class="audio-tip" id="audioTip" style="display:none">🔊 点击开启生日歌</div>
   <div class="cake-stage">
     <div class="cake">
@@ -130,6 +204,10 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
       <div class="cake-layer cake-layer-3"></div>
       <div class="candle"><div class="flame"></div></div>
     </div>
+    <span class="cake-side left">👧</span>
+    <span class="cake-side right">🐶</span>
+    <span class="cake-side bottom-l float-fast">👴</span>
+    <span class="cake-side bottom-r float-fast">👵</span>
   </div>
   <div class="birthday-text" id="birthdayText">祝你生日快乐</div>
   <div class="birthday-subtitle" id="birthdaySubtitle">🎈 愿你每一天都闪闪发光 🎈</div>
@@ -175,7 +253,7 @@ if(CONFIG){
   setTimeout(()=>{document.getElementById('btn1').classList.add('show')},2800);
   function launchFireworks(){
     const fw=document.getElementById('fireworks');
-    const colors=['#ff4757','#ffa502','#2ed573','#1e90ff','#c780ff','#ff6b9d','#fff200'];
+    const colors=['#ff6b9d','#ffa502','#2ed573','#1e90ff','#c780ff','#ff4757','#fff200'];
     for(let i=0;i<60;i++){
       setTimeout(()=>{
         const spark=document.createElement('div');
@@ -192,6 +270,28 @@ if(CONFIG){
       },i*30);
     }
   }
+  // 樱花飘落（全局）
+  function initSakura(id){
+    const layer=document.getElementById(id);
+    if(!layer)return;
+    layer.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden';
+    const flowers=['🌸','🌼','🌺','💮'];
+    for(let i=0;i<14;i++){
+      const s=document.createElement('span');
+      s.className='sakura';
+      s.textContent=flowers[Math.floor(Math.random()*flowers.length)];
+      s.style.left=Math.random()*100+'%';
+      const dur=8+Math.random()*6;
+      s.style.animationDuration=dur+'s';
+      s.style.animationDelay=(-Math.random()*dur)+'s';
+      s.style.fontSize=(14+Math.random()*10)+'px';
+      layer.appendChild(s);
+    }
+  }
+  initSakura('sakuraLayer1');
+  initSakura('sakuraLayer2');
+  initSakura('sakuraLayer3');
+  initSakura('sakuraLayer4');
   // 屏3 转盘绘制
   const canvas=document.getElementById('wheel');
   const ctx=canvas.getContext('2d');
@@ -219,29 +319,32 @@ if(CONFIG){
   }
   drawWheel();
   // 转盘旋转
-  let spinning=false,spunIndex=-1,extraChances=0;
+  let spinning=false,spunIndex=-1,extraChances=0,currentRotation=0;
   const MAX_EXTRA=2;  // 最多再抽2次（首抽+红包+1=最多3次）
   const spinBtn=document.getElementById('spinBtn');
+  const spinLabel=document.getElementById('spinLabel');
+  function setSpinLabel(html){spinLabel.innerHTML=html}
   spinBtn.addEventListener('click',()=>{
     if(spinning)return;
     if(spunIndex>=0){showPrizeModal(spunIndex);return}
     if(prizes.length===0){showError('未配置奖品');return}
     spinning=true;
     spinBtn.classList.add('disabled');
-    spinBtn.innerHTML='抽奖<br>中..';
+    setSpinLabel('抽奖<br>中..');
     spunIndex=Math.floor(Math.random()*prizes.length);
     const n=prizes.length;
     const arc=360/n;
     const targetCenter=-90+(spunIndex+.5)*arc;
     const extraSpins=5+Math.floor(Math.random()*3);
-    const finalAngle=(360-targetCenter)+extraSpins*360;
-    canvas.style.transform='rotate('+finalAngle+'deg)';
+    const deltaAngle=(360-targetCenter)+extraSpins*360;
+    currentRotation+=deltaAngle;          // 累加，不覆盖
+    canvas.style.transform='rotate('+currentRotation+'deg)';
     setTimeout(()=>{
       spinning=false;
       const prizeName=(prizes[spunIndex].name||'').toLowerCase();
       const isRedPacket=prizeName.includes('红包')||prizeName.includes('red');
-      if(!isRedPacket||extraChances>=MAX_EXTRA){spinBtn.classList.add('disabled');spinBtn.innerHTML='已<br>抽奖'}
-      else{spinBtn.innerHTML='再抽<br>一次'}
+      if(!isRedPacket||extraChances>=MAX_EXTRA){spinBtn.classList.add('disabled');setSpinLabel('已<br>抽奖')}
+      else{setSpinLabel('再抽<br>一次')}
       showPrizeModal(spunIndex);
     },4200);
   });
@@ -269,7 +372,7 @@ if(CONFIG){
         spunIndex=-1;
         extraChances++;
         spinBtn.classList.remove('disabled');
-        spinBtn.innerHTML='再抽<br>一次';
+        setSpinLabel('再抽<br>一次');
       }
     }
   });
