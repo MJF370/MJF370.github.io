@@ -114,7 +114,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,Blink
   <button class="next-btn" id="btn3">领取祝福 →</button>
   <div class="prize-modal" id="prizeModal">
     <div class="prize-card">
-      <h2>恭喜你！</h2>
+      <h2 id="prizeTitle">恭喜你！</h2>
       <div class="prize-img" id="prizeImg"></div>
       <div class="prize-name" id="prizeName"></div>
       <button class="close-btn" id="closeModal">查看祝福</button>
@@ -219,7 +219,8 @@ if(CONFIG){
   }
   drawWheel();
   // 转盘旋转
-  let spinning=false,spunIndex=-1;
+  let spinning=false,spunIndex=-1,extraChances=0;
+  const MAX_EXTRA=2;  // 最多再抽2次（首抽+红包+1=最多3次）
   const spinBtn=document.getElementById('spinBtn');
   spinBtn.addEventListener('click',()=>{
     if(spinning)return;
@@ -239,14 +240,18 @@ if(CONFIG){
       spinning=false;
       const prizeName=(prizes[spunIndex].name||'').toLowerCase();
       const isRedPacket=prizeName.includes('红包')||prizeName.includes('red');
-      if(!isRedPacket){spinBtn.classList.add('disabled');spinBtn.innerHTML='已<br>抽奖'}
+      if(!isRedPacket||extraChances>=MAX_EXTRA){spinBtn.classList.add('disabled');spinBtn.innerHTML='已<br>抽奖'}
       else{spinBtn.innerHTML='再抽<br>一次'}
       showPrizeModal(spunIndex);
     },4200);
   });
   function showPrizeModal(idx){
     const p=prizes[idx];
-    document.getElementById('prizeName').textContent=p.name||'神秘大奖';
+    const prizeName=(p.name||'').toLowerCase();
+    const isRedPacket=prizeName.includes('红包')||prizeName.includes('red');
+    const displayName=p.name||'神秘大奖';
+    document.getElementById('prizeTitle').textContent=isRedPacket?'恭喜你抽中 '+displayName+'！再给你一次机会 🎁':'恭喜你抽中 '+displayName+'！';
+    document.getElementById('prizeName').textContent=displayName;
     const imgBox=document.getElementById('prizeImg');
     if(p.img){imgBox.innerHTML='<img src="'+p.img+'" alt="'+p.name+'">'}
     else{
@@ -257,6 +262,16 @@ if(CONFIG){
   }
   document.getElementById('closeModal').addEventListener('click',()=>{
     document.getElementById('prizeModal').classList.remove('show');
+    if(spunIndex>=0){
+      const pName=(prizes[spunIndex].name||'').toLowerCase();
+      const isRedPacket=pName.includes('红包')||pName.includes('red');
+      if(isRedPacket && extraChances<MAX_EXTRA){
+        spunIndex=-1;
+        extraChances++;
+        spinBtn.classList.remove('disabled');
+        spinBtn.innerHTML='再抽<br>一次';
+      }
+    }
   });
   // 屏4 音频 + 礼炮
   let audio=null,celebrationFired=false;
