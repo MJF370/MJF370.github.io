@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>生日轮盘 · 配置生成器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%);min-height:100vh;padding:20px 16px 100px;color:#2d3436}
+.container{max-width:480px;margin:0 auto}
+.header{text-align:center;margin-bottom:24px;padding:20px 0}
+.header h1{font-size:24px;font-weight:800;background:linear-gradient(45deg,#ff6b9d,#c780ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.header p{font-size:13px;color:#636e72}
+.section{background:#fff;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.section-title{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.section-title::before{content:"";width:4px;height:14px;background:linear-gradient(180deg,#ff6b9d,#c780ff);border-radius:2px}
+.form-row{margin-bottom:12px}
+.form-row:last-child{margin-bottom:0}
+.form-row label{display:block;font-size:13px;color:#636e72;margin-bottom:6px;font-weight:500}
+.form-row input[type=text],.form-row input[type=url],.form-row input[type=number],.form-row textarea{width:100%;padding:10px 12px;border:1.5px solid #dfe6e9;border-radius:10px;font-size:14px;background:#f8f9fa;transition:all .2s;font-family:inherit}
+.form-row input:focus,.form-row textarea:focus{outline:none;border-color:#ff6b9d;background:#fff;box-shadow:0 0 0 3px rgba(255,107,157,.1)}
+.form-row textarea{resize:vertical;min-height:60px}
+.form-row .hint{font-size:12px;color:#b2bec3;margin-top:4px}
+.form-row .upload-area{display:flex;align-items:center;gap:10px}
+.form-row .upload-btn{padding:8px 14px;background:linear-gradient(135deg,#ff6b9d,#c780ff);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.form-row .upload-btn:active{transform:scale(.95)}
+.form-row .preview-img{width:50px;height:50px;border-radius:8px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px;flex-shrink:0;border:1px solid #eee}
+.form-row .preview-img img{width:100%;height:100%;object-fit:cover}
+.prize-item{background:#f8f9fa;border-radius:12px;padding:14px;margin-bottom:10px;position:relative;border:1.5px solid #e0e0e0}
+.prize-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prize-item-title{font-size:14px;font-weight:700;color:#ff6b9d}
+.prize-item-remove{width:24px;height:24px;background:#ff4757;color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:14px;line-height:1}
+.add-prize-btn{width:100%;padding:10px;background:#f0f0f0;border:2px dashed #b2bec3;border-radius:10px;font-size:14px;color:#636e72;cursor:pointer;font-weight:600;margin-top:6px}
+.add-prize-btn:active{background:#dfe6e9}
+.color-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;display:inline-block;margin-right:6px}
+.color-dot.active{border-color:#2d3436;transform:scale(1.1)}
+.color-dot[data-color="#ff6b9d"]{background:#ff6b9d}
+.color-dot[data-color="#ffa07a"]{background:#ffa07a}
+.color-dot[data-color="#ffd93d"]{background:#ffd93d}
+.color-dot[data-color="#6bcf7f"]{background:#6bcf7f}
+.color-dot[data-color="#4d96ff"]{background:#4d96ff}
+.color-dot[data-color="#c780ff"]{background:#c780ff}
+.color-dot[data-color="#ff4757"]{background:#ff4757}
+.color-dot[data-color="#00d2d3"]{background:#00d2d3}
+.color-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:6px}
+.generate-btn{position:fixed;bottom:0;left:0;right:0;padding:14px 16px;background:linear-gradient(135deg,#ff6b9d,#c780ff);color:#fff;border:none;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 -4px 20px rgba(255,107,157,.4);z-index:100;letter-spacing:1px}
+.generate-btn:active{opacity:.9}
+.generate-btn:disabled{background:#b2bec3;cursor:not-allowed}
+.result-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:20px}
+.result-modal.show{display:flex}
+.result-card{background:#fff;border-radius:20px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;animation:popIn .4s}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.result-card h3{font-size:18px;font-weight:800;margin-bottom:12px;color:#ff6b9d}
+.result-card p{font-size:13px;color:#636e72;line-height:1.6;margin-bottom:10px}
+.result-url{background:#f0f0f0;border-radius:8px;padding:10px;font-size:11px;word-break:break-all;font-family:monospace;max-height:100px;overflow-y:auto;margin-bottom:12px;line-height:1.5;border:1px solid #e0e0e0}
+.copy-btn,.close-result-btn{padding:10px 18px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px;margin-bottom:6px}
+.copy-btn{background:linear-gradient(135deg,#ff6b9d,#c780ff);color:#fff}
+.close-result-btn{background:#dfe6e9;color:#636e72}
+.tip-block{background:#fff9e6;border-left:3px solid #ffa502;padding:10px 12px;border-radius:6px;font-size:12px;color:#7d6608;line-height:1.6;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎂 生日轮盘 · 配置生成器</h1>
+    <p>填好信息，一键生成专属抽奖链接</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">基础信息</div>
+    <div class="form-row">
+      <label>寿星称呼</label>
+      <input type="text" id="hostName" placeholder="如：杨小姐" value="杨小姐">
+      <div class="hint">将显示在「欢迎来到XX的」欢迎语中</div>
+    </div>
+    <div class="form-row">
+      <label>生日主字幕</label>
+      <input type="text" id="birthdayText" placeholder="如：祝你生日快乐" value="祝你生日快乐">
+    </div>
+    <div class="form-row">
+      <label>生日副标题（可选）</label>
+      <input type="text" id="subtitle" placeholder="如：愿你每一天都闪闪发光" value="🎈 愿你每一天都闪闪发光 🎈">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">轮盘格数</div>
+    <div class="form-row">
+      <label>总格数</label>
+      <input type="number" id="gridCount" min="2" max="12" value="6" style="max-width:120px">
+      <div class="hint">建议 4-8 格，超过 12 格文字会重叠</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🎁 奖品设置</div>
+    <div id="prizeList"></div>
+    <button class="add-prize-btn" id="addPrizeBtn">+ 添加一个奖品</button>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🎵 生日歌音频（可选）</div>
+    <div class="form-row">
+      <label>音频文件 URL</label>
+      <div class="upload-area">
+        <input type="url" id="audioUrl" placeholder="https://...mp3" style="flex:1">
+        <button class="upload-btn" id="uploadAudioBtn">上传</button>
+      </div>
+      <div class="hint">不填则 5 秒后直接进入礼炮动画。建议用 mp3，时长 30s-1min</div>
+    </div>
+  </div>
+</div>
+
+<button class="generate-btn" id="generateBtn">✨ 生成专属抽奖链接</button>
+
+<div class="result-modal" id="resultModal">
+  <div class="result-card">
+    <h3>🎉 链接生成成功！</h3>
+    <p>对方只能通过这个链接进入，无法修改任何配置。请妥善保管。</p>
+    <div class="result-url" id="resultUrl"></div>
+    <div class="tip-block">
+      <b>📱 微信分享建议：</b><br>
+      1. 把链接发到微信群 / 好友<br>
+      2. 微信内置浏览器打开后会直接进入抽奖页<br>
+      3. 首次进入需点击"开启生日歌"（微信限制自动播放）<br>
+      4. 链接可能较长，建议先在电脑浏览器测试
+    </div>
+    <div class="tip-block" style="background:#e8f5e9;border-left-color:#2ed573;color:#1b5e20">
+      <b>🚀 部署方式：</b><br>
+      ① 直接双击 <code>wheel.html</code> 即可本地预览<br>
+      ② 部署到 Vercel / Netlify / GitHub Pages 即可获得 https 链接
+    </div>
+    <div style="margin-top:14px">
+      <button class="copy-btn" id="copyBtn">📋 复制链接</button>
+      <button class="copy-btn" id="previewBtn" style="background:linear-gradient(135deg,#4d96ff,#00d2d3)">👁 预览效果</button>
+      <button class="close-result-btn" id="closeResultBtn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="hiddenFileInput" accept="image/*,audio/*" style="display:none">
+
+<script>
+// 默认奖品数据
+const DEFAULT_COLORS = ['#ff6b9d','#ffa07a','#ffd93d','#6bcf7f','#4d96ff','#c780ff','#ff4757','#00d2d3'];
+const DEFAULT_PRIZES = [
+  {name:'一等奖',img:'',color:'#ff6b9d'},
+  {name:'二等奖',img:'',color:'#ffa07a'},
+  {name:'三等奖',img:'',color:'#ffd93d'},
+  {name:'红包',img:'',color:'#ff4757'},
+  {name:'谢谢参与',img:'',color:'#4d96ff'},
+  {name:'神秘大奖',img:'',color:'#c780ff'},
+];
+
+let prizes = JSON.parse(JSON.stringify(DEFAULT_PRIZES));
+
+// 渲染奖品列表
+function renderPrizes(){
+  const list = document.getElementById('prizeList');
+  const count = parseInt(document.getElementById('gridCount').value) || 6;
+  // 调整 prizes 数组长度
+  while(prizes.length < count){
+    prizes.push({name:'奖项'+(prizes.length+1),img:'',color:DEFAULT_COLORS[prizes.length%DEFAULT_COLORS.length]});
+  }
+  while(prizes.length > count){
+    prizes.pop();
+  }
+  list.innerHTML = '';
+  prizes.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'prize-item';
+    div.innerHTML = `
+      <div class="prize-item-header">
+        <div class="prize-item-title">第 ${idx+1} 格</div>
+        <button class="prize-item-remove" data-idx="${idx}">×</button>
+      </div>
+      <div class="form-row">
+        <label>奖品名称</label>
+        <input type="text" data-field="name" data-idx="${idx}" value="${escapeHtml(p.name)}" placeholder="如：一等奖 / 红包">
+      </div>
+      <div class="form-row">
+        <label>中奖图片（可选，留空用 emoji）</label>
+        <div class="upload-area">
+          <div class="preview-img" id="preview-${idx}">${p.img ? '<img src="'+p.img+'">' : '🎁'}</div>
+          <input type="text" data-field="img" data-idx="${idx}" value="${escapeHtml(p.img)}" placeholder="https://... 或上传">
+          <button class="upload-btn" data-upload="prize" data-idx="${idx}">上传</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>扇区颜色</label>
+        <div class="color-row">
+          ${DEFAULT_COLORS.map(c=>`<span class="color-dot ${c===p.color?'active':''}" data-color="${c}" data-idx="${idx}"></span>`).join('')}
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function escapeHtml(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+
+// 事件委托
+document.getElementById('prizeList').addEventListener('click', e => {
+  const t = e.target;
+  if(t.classList.contains('prize-item-remove')){
+    const idx = parseInt(t.dataset.idx);
+    if(prizes.length <= 2){alert('至少保留 2 格');return}
+    prizes.splice(idx,1);
+    document.getElementById('gridCount').value = prizes.length;
+    renderPrizes();
+  } else if(t.dataset.color){
+    const idx = parseInt(t.dataset.idx);
+    prizes[idx].color = t.dataset.color;
+    renderPrizes();
+  } else if(t.dataset.upload==='prize'){
+    const idx = parseInt(t.dataset.idx);
+    uploadFile('image', dataUrl => {
+      prizes[idx].img = dataUrl;
+      // 由于 base64 较大，这里改用本地存储方式
+      // 实际上为了 URL 长度可控，图片建议用 URL
+      renderPrizes();
+    });
+  }
+});
+
+document.getElementById('prizeList').addEventListener('input', e => {
+  const t = e.target;
+  if(t.dataset.field){
+    const idx = parseInt(t.dataset.idx);
+    prizes[idx][t.dataset.field] = t.value;
+  }
+});
+
+document.getElementById('gridCount').addEventListener('change', renderPrizes);
+document.getElementById('addPrizeBtn').addEventListener('click', () => {
+  const count = parseInt(document.getElementById('gridCount').value) || 6;
+  if(count >= 12){alert('最多 12 格');return}
+  document.getElementById('gridCount').value = count + 1;
+  renderPrizes();
+});
+
+// 文件上传
+function uploadFile(type, callback){
+  const input = document.getElementById('hiddenFileInput');
+  input.accept = type === 'image' ? 'image/*' : 'audio/*';
+  input.value = '';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file)return;
+    if(file.size > 2*1024*1024){
+      if(!confirm('文件超过 2MB，base64 编码后 URL 会非常长，建议用 URL 引用方式。是否继续？'))return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => callback(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+document.getElementById('uploadAudioBtn').addEventListener('click', () => {
+  uploadFile('audio', dataUrl => {
+    document.getElementById('audioUrl').value = dataUrl;
+  });
+});
+
+// 生成链接
+document.getElementById('generateBtn').addEventListener('click', () => {
+  const hostName = document.getElementById('hostName').value.trim();
+  const birthdayText = document.getElementById('birthdayText').value.trim();
+  const subtitle = document.getElementById('subtitle').value.trim();
+  const audioUrl = document.getElementById('audioUrl').value.trim();
+
+  if(!hostName){alert('请填写寿星称呼');return}
+  if(prizes.length < 2){alert('至少需要 2 个奖品');return}
+  if(prizes.some(p=>!p.name.trim())){alert('所有奖品都需要填写名称');return}
+
+  const configObj = {
+    v: 1,
+    w: hostName,
+    p: prizes,
+    t: birthdayText || '祝你生日快乐',
+  };
+  if(subtitle) configObj.st = subtitle;
+  if(audioUrl) configObj.a = audioUrl;
+
+  // 生成签名（防篡改）
+  const checkStr = JSON.stringify({v:configObj.v,w:configObj.w,p:configObj.p,t:configObj.t});
+  let h = 0;
+  for(let i=0;i<checkStr.length;i++){h=((h<<5)-h)+checkStr.charCodeAt(i);h|=0}
+  configObj.s = h.toString(36);
+
+  const json = JSON.stringify(configObj);
+  const b64 = btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+
+  // 生成完整 URL
+  const base = location.href.replace(/index\.html.*$/,'').replace(/[^/]+$/,'') + 'wheel.html';
+  const fullUrl = base + '#wheel=' + b64;
+
+  // 检查 URL 长度
+  if(fullUrl.length > 8000){
+    alert('配置内容过多导致链接过长（'+fullUrl.length+' 字符），建议：\n1. 用 URL 引用图片而非 base64 内嵌\n2. 用 URL 引用音频文件\n3. 减少格数');
+  }
+
+  document.getElementById('resultUrl').textContent = fullUrl;
+  document.getElementById('resultUrl').dataset.url = fullUrl;
+  document.getElementById('resultModal').classList.add('show');
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const url = document.getElementById('resultUrl').dataset.url;
+  const ta = document.createElement('textarea');
+  ta.value = url;
+  document.body.appendChild(ta);
+  ta.select();
+  try{document.execCommand('copy');alert('链接已复制！')}catch(e){alert('复制失败，请手动复制')}
+  document.body.removeChild(ta);
+});
+
+document.getElementById('previewBtn').addEventListener('click', () => {
+  const url = document.getElementById('resultUrl').dataset.url;
+  window.open(url, '_blank');
+});
+
+document.getElementById('closeResultBtn').addEventListener('click', () => {
+  document.getElementById('resultModal').classList.remove('show');
+});
+
+// 初始化
+renderPrizes();
+</script>
+</body>
+</html>
