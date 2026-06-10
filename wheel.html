@@ -358,10 +358,13 @@ if(CONFIG){
     const n=prizes.length;
     const arc=360/n;
     // 让扇区 spunIndex 中心转到屏幕 12 点钟（指针位置）
-    // 扇区中心画布角度 = -90 + (spunIndex+0.5)*arc
-    // canvas 旋转 θ 顺时针后，扇区中心屏幕角度 = 画布角度 + θ
-    // 屏幕 0°（12 点钟）= 指针位置 → 令屏幕角度=0 → θ = 90 - (spunIndex+0.5)*arc
-    let baseAngle=90-(spunIndex+0.5)*arc;
+    // Canvas 2D 角度：0°=3 点钟，90°=6 点钟，-90°/270°=12 点钟
+    // 扇区中心画布角度 = (spunIndex+0.5)*arc - 90°
+    // CSS rotate(θ) 顺时针转 θ，画布上 α 度的点屏幕位置 = α + θ
+    // 令扇区中心屏幕位置 = 270°（12 点钟）：
+    //   (spunIndex+0.5)*arc - 90 + θ = 270
+    //   θ = 360 - (spunIndex+0.5)*arc
+    let baseAngle=360-(spunIndex+0.5)*arc;
     baseAngle=((baseAngle%360)+360)%360;  // 归一化到 [0,360)
     const extraSpins=5+Math.floor(Math.random()*3);
     let finalAngle=baseAngle+extraSpins*360;
