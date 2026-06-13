@@ -366,10 +366,16 @@ if(CONFIG){
     //   θ = 360 - (spunIndex+0.5)*arc
     let baseAngle=360-(spunIndex+0.5)*arc;
     baseAngle=((baseAngle%360)+360)%360;  // 归一化到 [0,360)
-    const extraSpins=5+Math.floor(Math.random()*3);
-    let finalAngle=baseAngle+extraSpins*360;
-    // 保证 finalAngle > currentRotation（避免动画不触发）
-    while(finalAngle<=currentRotation)finalAngle+=360;
+    // 关键：每次旋转都保证两点——
+    //   1) finalAngle 模 360 = baseAngle（扇区停下位置正确）
+    //   2) finalAngle - currentRotation ≥ MIN_SPINS*360（每次至少转 6 圈，避免红包后续抽时累计角度大、增量小导致转速骤降）
+    const MIN_SPINS=6;
+    const N=Math.ceil((currentRotation+MIN_SPINS*360-baseAngle)/360);
+    let finalAngle=baseAngle+N*360;
+    // 防御：万一浮点边界，再补 1 圈
+    if(finalAngle-currentRotation<MIN_SPINS*360)finalAngle+=360;
+    // 随机多转 0~1 圈，视觉差异
+    finalAngle+=Math.floor(Math.random()*2)*360;
     currentRotation=finalAngle;
     canvas.style.transform='rotate('+currentRotation+'deg)';
     setTimeout(()=>{
